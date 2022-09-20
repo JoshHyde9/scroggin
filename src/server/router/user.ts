@@ -6,7 +6,14 @@ import { hash } from "argon2";
 export const userRouter = createRouter().mutation("register", {
   input: registerSchema,
   resolve: async ({ input, ctx }) => {
-    const { firstName, lastName, email, password } = input;
+    const { firstName, lastName, email, password, confirmPassword } = input;
+
+    if (password.trim() !== confirmPassword.trim()) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Passwords must match.",
+      });
+    }
 
     const user = await ctx.prisma.user.findFirst({
       where: { email },
@@ -18,6 +25,7 @@ export const userRouter = createRouter().mutation("register", {
         message: "Email is already in use.",
       });
     }
+
     try {
       const hashedPassword = await hash(password);
 
