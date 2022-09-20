@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { IRegister } from "../server/common/schemas";
 import { trpc } from "../utils/trpc";
 
+// TODO: Render tRPC errors
 const Register: NextPage = () => {
   const router = useRouter();
   const { mutateAsync } = trpc.useMutation("user.register", {
