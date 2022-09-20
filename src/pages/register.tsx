@@ -1,20 +1,21 @@
 import type { NextPage } from "next";
-import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { IRegister } from "../server/common/schemas";
+import { IRegister, registerSchema } from "../server/common/schemas";
 import { trpc } from "../utils/trpc";
 
-// TODO: Render tRPC errors
 const Register: NextPage = () => {
+  const [error, setError] = useState("");
   const router = useRouter();
-  const { mutateAsync } = trpc.useMutation("user.register", {
+  const { mutate } = trpc.useMutation("user.register", {
     onSuccess: () => {
-      console.log("Logged in!");
+      router.push("/");
     },
-    onError: (error) => {
-      console.log(error);
+    onError: async (error) => {
+      setError(error.message);
     },
   });
 
@@ -22,18 +23,14 @@ const Register: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IRegister>();
+  } = useForm<IRegister>({
+    resolver: zodResolver(registerSchema),
+  });
 
-  const onSubmit = useCallback(
-    async (data: IRegister) => {
-      const result = await mutateAsync(data);
-
-      if (result.staus === 201) {
-        router.push("/");
-      }
-    },
-    [mutateAsync, router]
-  );
+  const onSubmit: SubmitHandler<IRegister> = (data) => {
+    setError("");
+    mutate(data);
+  };
 
   return (
     <div className="flex flex-col items-center mt-3">
@@ -85,12 +82,15 @@ const Register: NextPage = () => {
             </label>
             <input
               className="appearance-none block w-full bg-gray-200 text-gray-700 rounded py-3 px-4 leading-tight focus:outline-none"
-              type="email"
               autoComplete="off"
               {...register("email", { required: true })}
             />
             {errors.email && (
-              <span className="text-xs text-red-500">Field is required.</span>
+              <span className="text-xs text-red-500">
+                {errors.email.message?.startsWith("F")
+                  ? "Field is required."
+                  : "Invalid email."}
+              </span>
             )}
           </div>
         </div>
@@ -131,6 +131,13 @@ const Register: NextPage = () => {
             )}
           </div>
         </div>
+
+        {error && (
+          <div className="flex flex-wrap mb-2 px-3">
+            <p className="leading-relaxed text-xs text-red-500">{error}</p>
+          </div>
+        )}
+
         <div className="flex justify-center">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-10 rounded focus:outline-none focus:shadow-outline"

@@ -2,6 +2,7 @@
 import * as trpc from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
 import { Session } from "next-auth";
+import { ZodError } from "zod";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { prisma } from "../db/client";
 
@@ -25,7 +26,7 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  **/
 export const createContext = async (
-  opts: trpcNext.CreateNextContextOptions,
+  opts: trpcNext.CreateNextContextOptions
 ) => {
   const { req, res } = opts;
 
@@ -39,7 +40,19 @@ export const createContext = async (
 
 type Context = trpc.inferAsyncReturnType<typeof createContext>;
 
-export const createRouter = () => trpc.router<Context>();
+export const createRouter = () =>
+  trpc.router<Context>().formatError(({ shape, error }) => {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError:
+          error.code === "BAD_REQUEST" && error.cause instanceof ZodError
+            ? error.cause.flatten()
+            : null,
+      },
+    };
+  });
 
 /**
  * Creates a tRPC router that asserts all queries and mutations are from an authorized user. Will throw an unauthorized error if a user is not signed in.

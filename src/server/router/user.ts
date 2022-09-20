@@ -34,7 +34,7 @@ export const userRouter = createRouter().mutation("register", {
       });
 
       return {
-        staus: 201,
+        status: 201,
         message: "Account created successfully.",
         user: newUser,
       };
