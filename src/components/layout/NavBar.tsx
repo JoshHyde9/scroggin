@@ -39,6 +39,16 @@ const MobileNav = ({
       } transition-transform duration-300 ease-in-out filter drop-shadow-md `}
     >
       <div className="flex flex-col mt-9 ml-4">
+        <NextLink href="/">
+          <a
+            className={`text-xl font-normal my-4 ${
+              router.asPath === "/" ? "text-purple-500" : ""
+            }`}
+            onClick={() => setOpen(!open)}
+          >
+            Home
+          </a>
+        </NextLink>
         {!session && (
           <>
             <NextLink href="/login">
@@ -116,7 +126,8 @@ const NavBar: React.FC = () => {
           />
         </div>
 
-        <div className="hidden mt-10 md:flex">
+        <div className="hidden mt-10 items-center md:flex">
+          <NavLink to="/">Home</NavLink>
           {!session && (
             <>
               <NavLink to="/login">Login</NavLink>

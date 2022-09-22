@@ -140,7 +140,7 @@ const Register: NextPage = () => {
 
         <div className="flex justify-center">
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-10 rounded focus:outline-none focus:shadow-outline"
+            className="bg-purple-500 hover:bg-purple-400 text-white font-bold py-2 px-10 rounded focus:outline-none focus:shadow-outline"
             type="submit"
           >
             Register
