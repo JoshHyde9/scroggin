@@ -43,7 +43,7 @@ model Session {
 
 model User {
     id        String    @id @default(uuid())
-    image     String?   @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
+    image     String    @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
     firstName String
     lastName  String
     email     String    @unique
