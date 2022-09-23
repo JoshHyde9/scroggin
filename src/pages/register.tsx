@@ -1,12 +1,12 @@
-import type { GetServerSideProps, NextPage } from "next";
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import type { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { IRegister, registerSchema } from "../server/common/schemas";
 import { trpc } from "../utils/trpc";
-import { getSession } from "next-auth/react";
 
 const Register: NextPage = () => {
   const [error, setError] = useState("");

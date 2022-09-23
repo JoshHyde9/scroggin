@@ -1,11 +1,11 @@
+import { useState } from "react";
 import type { GetServerSideProps, NextPage } from "next";
+import { useRouter } from "next/router";
+import { getSession, signIn } from "next-auth/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/router";
 
 import { ILogin, loginSchema } from "../server/common/schemas";
-import { getSession, signIn, useSession } from "next-auth/react";
-import { useState } from "react";
 
 const Login: NextPage = () => {
   const [error, setError] = useState("");
