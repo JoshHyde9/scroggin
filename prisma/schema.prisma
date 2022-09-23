@@ -41,6 +41,14 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
 model User {
     id        String    @id @default(uuid())
     image     String    @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
@@ -48,14 +56,33 @@ model User {
     lastName  String
     email     String    @unique
     password  String
+    likes     Like[]
+    recipe    Recipe[]
     accounts  Account[]
     sessions  Session[]
 }
 
-model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+model Recipe {
+    id          String   @id @default(uuid())
+    name        String
+    ingredients String
+    method      String
+    tags        String[]
+    likeCount   Int      @default(0)
+    userId      String
+    user        User     @relation(fields: [userId], references: [id])
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now())
+    Like        Like[]
+}
 
-    @@unique([identifier, token])
+model Like {
+    id        String   @id @default(uuid())
+    value     Int
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+    recipeId  String
+    recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
 }
