@@ -76,7 +76,7 @@ const MobileNav = ({
         {session && (
           <>
             <button
-              className="text-xl font-normal my-4 w-24"
+              className="text-xl font-normal my-4 text-left"
               onClick={() => signOut({ callbackUrl: "/" })}
             >
               Logout
