@@ -13,3 +13,13 @@ export const registerSchema = loginSchema.extend({
 
 export type ILogin = z.infer<typeof loginSchema>;
 export type IRegister = z.infer<typeof registerSchema>;
+
+export const recipeSchema = z.object({
+  name: z.string().min(1),
+  ingredients: z.string().min(1),
+  method: z.string().min(1),
+  tags: z.array(z.string()).nonempty(),
+  likeCount: z.number(),
+});
+
+export type IRecipe = z.infer<typeof recipeSchema>;
