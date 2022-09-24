@@ -63,17 +63,18 @@ model User {
 }
 
 model Recipe {
-    id          String   @id @default(uuid())
-    name        String
-    ingredients String
-    method      String
-    tags        String[]
-    likeCount   Int      @default(0)
-    likes       Like[]
-    userId      String
-    user        User     @relation(fields: [userId], references: [id])
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @default(now())
+    id           String   @id @default(uuid())
+    name         String
+    displayImage String
+    ingredients  String
+    method       String
+    tags         String[]
+    likeCount    Int      @default(0)
+    likes        Like[]
+    userId       String
+    user         User     @relation(fields: [userId], references: [id])
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @default(now())
 }
 
 model Like {
