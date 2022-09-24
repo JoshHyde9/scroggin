@@ -1,16 +1,17 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
-const Tiptap = ({
-  description,
-  onChange,
-}: {
-  description: string;
-  onChange: any;
-}) => {
+interface TipTapProps {
+  content: string;
+  editable?: boolean;
+  onChange?: any;
+}
+
+const Tiptap = ({ content, onChange, editable }: TipTapProps) => {
   const editor = useEditor({
     extensions: [StarterKit],
-    content: description,
+    content,
+    editable,
     onUpdate({ editor }) {
       onChange(editor.getHTML());
     },
