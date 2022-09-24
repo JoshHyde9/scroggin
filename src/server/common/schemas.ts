@@ -1,4 +1,4 @@
-import { TypeOf, z } from "zod";
+import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -16,14 +16,25 @@ export type IRegister = z.infer<typeof registerSchema>;
 
 export const createRecipeSchema = z.object({
   name: z.string().min(1),
+  displayImage: z.string().url(),
   ingredients: z.string().min(1),
   method: z.string().min(1),
-  tags: z.string().min(1),
 });
 
-export const recipeSchema = createRecipeSchema.extend({
+export const frontendCreateRecipeSchema = createRecipeSchema.extend({
+  id: z.string(),
+  tags: z.array(z.string()).min(1),
   likeCount: z.number(),
 });
 
-export type ICreateRecipe = z.infer<typeof createRecipeSchema>;
+export const backendCreateRecipeSchema = createRecipeSchema.extend({
+  tags: z.string().min(1),
+});
+
+export const recipeSchema = frontendCreateRecipeSchema.extend({
+  createdAt: z.date(),
+});
+
+export type ICreateFontendRecipe = z.infer<typeof frontendCreateRecipeSchema>;
+export type ICreateBackendRecipe = z.infer<typeof backendCreateRecipeSchema>;
 export type IRecipe = z.infer<typeof recipeSchema>;
