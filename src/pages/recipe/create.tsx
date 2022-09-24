@@ -3,22 +3,37 @@ import { NextPage } from "next";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ICreateRecipe, createRecipeSchema } from "../../server/common/schemas";
+import {
+  backendCreateRecipeSchema,
+  ICreateBackendRecipe,
+} from "../../server/common/schemas";
 import Tiptap from "../../components/TipTap";
+import { trpc } from "../../utils/trpc";
 
 const CreateRecipe: NextPage = () => {
   const [error, setError] = useState("");
+
+  const { mutate } = trpc.useMutation("recipe.create", {
+    onSuccess: () => {
+      setError("");
+    },
+    onError: (error) => {
+      setError(error.message);
+    },
+  });
+
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<ICreateRecipe>({
-    resolver: zodResolver(createRecipeSchema),
+  } = useForm<ICreateBackendRecipe>({
+    resolver: zodResolver(backendCreateRecipeSchema),
   });
 
-  const onSubmit: SubmitHandler<ICreateRecipe> = async (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<ICreateBackendRecipe> = async (data) => {
+    mutate(data);
+    setError("");
   };
 
   return (
@@ -49,6 +64,29 @@ const CreateRecipe: NextPage = () => {
           <div className="w-full px-3">
             <label
               className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="image"
+            >
+              Image:
+            </label>
+            <input
+              className="appearance-none block w-full bg-gray-200 text-gray-700 rounded py-3 px-4 leading-tight focus:outline-none"
+              autoComplete="off"
+              placeholder="https://static01.nyt.com/images/2021/04/07/dining/06croissantsrex1/merlin_184841898_ccc8fb62-ee41-44e8-9ddf-b95b198b88db-master768.jpg"
+              {...register("displayImage", { required: true })}
+            />
+            <p className="text-xs italic">
+              note: this image is to a url (this may change in the future)
+            </p>
+            {errors.displayImage && (
+              <span className="text-xs text-red-500">Field is required.</span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap mb-6">
+          <div className="w-full px-3">
+            <label
+              className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
               htmlFor="ingredients"
             >
               Ingredients:
@@ -58,7 +96,7 @@ const CreateRecipe: NextPage = () => {
               name="ingredients"
               render={({ field }) => {
                 return (
-                  <Tiptap description={field.value} onChange={field.onChange} />
+                  <Tiptap content={field.value} onChange={field.onChange} />
                 );
               }}
               rules={{ required: true }}
@@ -82,7 +120,7 @@ const CreateRecipe: NextPage = () => {
               name="method"
               render={({ field }) => {
                 return (
-                  <Tiptap description={field.value} onChange={field.onChange} />
+                  <Tiptap content={field.value} onChange={field.onChange} />
                 );
               }}
               rules={{ required: true }}
@@ -104,10 +142,10 @@ const CreateRecipe: NextPage = () => {
             <input
               className="appearance-none block w-full bg-gray-200 text-gray-700 rounded py-3 px-4 leading-tight focus:outline-none"
               autoComplete="off"
-              placeholder="Dinner, easy"
+              placeholder="Dinner, Easy"
               {...register("tags", { required: true })}
             />
-            {errors.tags && (
+            {errors.name && (
               <span className="text-xs text-red-500">Field is required.</span>
             )}
           </div>
