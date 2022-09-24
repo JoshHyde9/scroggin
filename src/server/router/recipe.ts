@@ -35,6 +35,10 @@ export const recipeRouter = createRouter()
     async resolve({ ctx, input }) {
       const { name, ingredients, method, tags } = input;
 
+      const tagArray = tags.replace(/ /g, "").split(",");
+
+      console.log(tagArray);
+
       const user = ctx.session.user;
 
       if (
@@ -50,7 +54,7 @@ export const recipeRouter = createRouter()
       }
 
       const newRecipe = await ctx.prisma.recipe.create({
-        data: { name, ingredients, method, tags, userId: user.id },
+        data: { name, ingredients, method, tags: tagArray, userId: user.id },
       });
 
       return newRecipe;
