@@ -1,6 +1,6 @@
 import { createRouter } from "./context";
 import { TRPCError } from "@trpc/server";
-import { recipeSchema } from "../common/schemas";
+import { backendCreateRecipeSchema } from "../common/schemas";
 
 export const recipeRouter = createRouter()
   .query("getAll", {
@@ -31,30 +31,23 @@ export const recipeRouter = createRouter()
     });
   })
   .mutation("create", {
-    input: recipeSchema,
+    input: backendCreateRecipeSchema,
     async resolve({ ctx, input }) {
-      const { name, ingredients, method, tags } = input;
+      const { name, displayImage, ingredients, method, tags } = input;
 
       const tagArray = tags.replace(/ /g, "").split(",");
 
-      console.log(tagArray);
-
       const user = ctx.session.user;
 
-      if (
-        name.trim() === "" ||
-        ingredients.trim() === "" ||
-        method.trim() === "" ||
-        tags.length <= 0
-      ) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Please fill in required field. ",
-        });
-      }
-
       const newRecipe = await ctx.prisma.recipe.create({
-        data: { name, ingredients, method, tags: tagArray, userId: user.id },
+        data: {
+          name,
+          displayImage,
+          ingredients,
+          method,
+          tags: tagArray,
+          userId: user.id,
+        },
       });
 
       return newRecipe;
