@@ -20,4 +20,7 @@ export default defineNextConfig({
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["i.imgur.com", "static01.nyt.com"],
+  },
 });
