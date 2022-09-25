@@ -1,7 +1,8 @@
 import type { NextPage } from "next";
-import RecipeCard from "../components/RecipeCard";
 import { IRecipe } from "../server/common/schemas";
 import { trpc } from "../utils/trpc";
+
+import { RecipeCard } from "../components/RecipeCard";
 
 const Home: NextPage = () => {
   const { data: recipes, isLoading } = trpc.useQuery(["recipe.getAll"]);
