@@ -62,23 +62,59 @@ export const recipeRouter = createRouter()
 
       const loggedInUser = ctx.session.user;
 
-      const recipeCreator = await ctx.prisma.recipe.findFirst({
-        where: { userId: loggedInUser.id },
-      });
+      const recipe = await ctx.prisma.recipe.findFirst({ where: { id } });
 
-      if (!recipeCreator) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "User not found." });
+      if (!recipe) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Recipe not found. ",
+        });
       }
 
-      if (loggedInUser.id !== recipeCreator.userId) {
+      const recipeCreator = recipe.userId;
+
+      if (loggedInUser.id !== recipeCreator) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You are not allowed to delete other people's recipes.",
         });
       }
 
-      const deleteRecipe = await ctx.prisma.recipe.delete({
+      await ctx.prisma.recipe.delete({
         where: { id },
       });
+
+      return true;
+    },
+  })
+  .mutation("edit", {
+    input: backendCreateRecipeSchema.extend({ id: z.string() }),
+    async resolve({ ctx, input }) {
+      const { id, name, displayImage, method, ingredients, tags } = input;
+
+      const loggedInUser = ctx.session.user;
+
+      const recipe = await ctx.prisma.recipe.findFirst({ where: { id } });
+
+      if (!recipe) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Recipe does not exist. ",
+        });
+      }
+
+      if (loggedInUser.id !== recipe.userId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to delete other people's recipes.",
+        });
+      }
+
+      const updateRecipe = await ctx.prisma.recipe.update({
+        where: { id },
+        data: { name, displayImage, method, ingredients, tags },
+      });
+
+      return updateRecipe;
     },
   });
