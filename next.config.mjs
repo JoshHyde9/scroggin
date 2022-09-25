@@ -21,6 +21,11 @@ export default defineNextConfig({
     defaultLocale: "en",
   },
   images: {
-    domains: ["i.imgur.com", "static01.nyt.com", "cdn.pixabay.com"],
+    domains: [
+      "i.imgur.com",
+      "static01.nyt.com",
+      "cdn.pixabay.com",
+      "www.sbs.com.au",
+    ],
   },
 });
