@@ -7,8 +7,9 @@ import {
   backendCreateRecipeSchema,
   ICreateBackendRecipe,
 } from "../../server/common/schemas";
-import Tiptap from "../../components/TipTap";
 import { trpc } from "../../utils/trpc";
+
+import { Tiptap } from "../../components/TipTap";
 
 const CreateRecipe: NextPage = () => {
   const [error, setError] = useState("");
@@ -96,7 +97,11 @@ const CreateRecipe: NextPage = () => {
               name="ingredients"
               render={({ field }) => {
                 return (
-                  <Tiptap content={field.value} onChange={field.onChange} />
+                  <Tiptap
+                    content={field.value}
+                    onChange={field.onChange}
+                    editable={true}
+                  />
                 );
               }}
               rules={{ required: true }}
@@ -120,7 +125,11 @@ const CreateRecipe: NextPage = () => {
               name="method"
               render={({ field }) => {
                 return (
-                  <Tiptap content={field.value} onChange={field.onChange} />
+                  <Tiptap
+                    content={field.value}
+                    onChange={field.onChange}
+                    editable={true}
+                  />
                 );
               }}
               rules={{ required: true }}
