@@ -136,7 +136,12 @@ const NavBar: React.FC = () => {
           )}
           {session && (
             <>
-              <button onClick={() => signOut()}>Logout</button>
+              <button
+                onClick={() => signOut()}
+                className="transition ease-in-out duration-300 relative hover:text-purple-300"
+              >
+                Logout
+              </button>
               <NavLink to="/account">
                 <img
                   className="object-cover w-12 h-12 rounded-full"
