@@ -1,23 +1,37 @@
 import { Recipe, User } from "@prisma/client";
 import { GetServerSideProps, NextPage } from "next";
-
-import Image from "next/image";
+import { useRouter } from "next/router";
+import { Session } from "next-auth";
 import dayjs from "dayjs";
+import Image from "next/image";
 
 import { prisma } from "../../server/db/client";
-import { Tiptap } from "../../components/TipTap";
+import { getServerAuthSession } from "../../server/common/get-server-auth-session";
+import { trpc } from "../../utils/trpc";
+
 import { RecipeTags } from "../../components/RecipeTags";
+import { Tiptap } from "../../components/TipTap";
 
 interface PageProps {
   recipe: Recipe;
   recipeCreator: User;
+  session: Session;
 }
 
 const RecipePage: NextPage<PageProps> = ({
   recipe,
   recipeCreator,
+  session,
 }: PageProps) => {
-  if (!recipe && !recipeCreator) {
+  const router = useRouter();
+
+  const { mutate: deleteRecipe } = trpc.useMutation(["recipe.delete"], {
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
+
+  if (!recipe && !recipeCreator && !session) {
     return <div>loading...</div>;
   }
 
@@ -66,17 +80,60 @@ const RecipePage: NextPage<PageProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="h-12 w-12 relative">
-          <Image
-            src={recipeCreator.image}
-            layout="fill"
-            className="rounded-full"
-          />
+      <div className="flex justify-between">
+        <div className="flex items-center gap-2">
+          <div className="h-12 w-12 relative">
+            <Image
+              src={recipeCreator.image}
+              layout="fill"
+              className="rounded-full"
+            />
+          </div>
+          <h3 className="text-lg hover:cursor-pointer hover:text-purple-300 ease-in-out duration-300">
+            {recipeCreator.firstName} {recipeCreator.lastName}
+          </h3>
         </div>
-        <h3 className="text-lg hover:cursor-pointer hover:text-purple-300 ease-in-out duration-300">
-          {recipeCreator.firstName} {recipeCreator.lastName}
-        </h3>
+        {/* If current logged in user is the creator of the recipe */}
+        {session?.user?.id === recipeCreator.id && (
+          <div className="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <button
+              onClick={() => deleteRecipe({ id: recipe.id })}
+              className="hover:cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="stroke-red-500 hover:stroke-red-400 ease-in-out duration-300"
+              >
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -91,6 +148,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const session = await getServerAuthSession(context);
+
   let recipe = await prisma.recipe.findFirst({ where: { id } });
 
   const recipeCreator = await prisma.user.findFirst({
@@ -100,8 +159,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   recipe = JSON.parse(JSON.stringify(recipe));
 
+  if (!session) {
+    return {
+      props: { recipe, recipeCreator },
+    };
+  }
+
   return {
-    props: { recipe, recipeCreator },
+    props: { recipe, recipeCreator, session },
   };
 };
 
