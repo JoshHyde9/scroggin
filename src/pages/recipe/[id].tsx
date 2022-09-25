@@ -1,4 +1,3 @@
-import { Recipe, User } from "@prisma/client";
 import {
   NextPage,
   InferGetServerSidePropsType,
@@ -6,9 +5,9 @@ import {
   PreviewData,
 } from "next";
 import { useRouter } from "next/router";
-import { Session } from "next-auth";
 import dayjs from "dayjs";
 import Image from "next/image";
+import { ParsedUrlQuery } from "querystring";
 
 import { prisma } from "../../server/db/client";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
@@ -16,7 +15,6 @@ import { trpc } from "../../utils/trpc";
 
 import { RecipeTags } from "../../components/RecipeTags";
 import { Tiptap } from "../../components/TipTap";
-import { ParsedUrlQuery } from "querystring";
 
 const RecipePage: NextPage = ({
   recipe,
