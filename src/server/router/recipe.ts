@@ -1,5 +1,7 @@
-import { createRouter } from "./context";
+import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+
+import { createRouter } from "./context";
 import { backendCreateRecipeSchema } from "../common/schemas";
 
 export const recipeRouter = createRouter()
@@ -51,5 +53,32 @@ export const recipeRouter = createRouter()
       });
 
       return newRecipe;
+    },
+  })
+  .mutation("delete", {
+    input: z.object({ id: z.string() }),
+    async resolve({ ctx, input }) {
+      const { id } = input;
+
+      const loggedInUser = ctx.session.user;
+
+      const recipeCreator = await ctx.prisma.recipe.findFirst({
+        where: { userId: loggedInUser.id },
+      });
+
+      if (!recipeCreator) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found." });
+      }
+
+      if (loggedInUser.id !== recipeCreator.userId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to delete other people's recipes.",
+        });
+      }
+
+      const deleteRecipe = await ctx.prisma.recipe.delete({
+        where: { id },
+      });
     },
   });
