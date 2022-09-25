@@ -1,8 +1,10 @@
 import { Recipe, User } from "@prisma/client";
 import { GetServerSideProps, NextPage } from "next";
+
 import Image from "next/image";
 import dayjs from "dayjs";
 
+import { prisma } from "../../server/db/client";
 import { Tiptap } from "../../components/TipTap";
 import { RecipeTags } from "../../components/RecipeTags";
 
@@ -89,9 +91,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  let recipe = await prisma?.recipe.findFirst({ where: { id } });
+  let recipe = await prisma.recipe.findFirst({ where: { id } });
 
-  const recipeCreator = await prisma?.user.findFirst({
+  const recipeCreator = await prisma.user.findFirst({
     where: { id: recipe?.userId },
     select: { firstName: true, lastName: true, image: true },
   });
