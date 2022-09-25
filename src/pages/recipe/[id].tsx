@@ -12,23 +12,19 @@ interface PageProps {
 }
 
 const RecipePage: NextPage<PageProps> = ({
-  recipe: {
-    name,
-    displayImage,
-    ingredients,
-    method,
-    tags,
-    likeCount,
-    createdAt,
-  },
+  recipe,
   recipeCreator,
 }: PageProps) => {
+  if (!recipe && !recipeCreator) {
+    return <div>loading...</div>;
+  }
+
   return (
     <div className="container mx-auto max-w-5xl">
-      <h1 className="text-4xl text-center italic">{name}</h1>
+      <h1 className="text-4xl text-center italic">{recipe.name}</h1>
       <div className="relative h-80 w-3/5 block mx-auto my-5">
         <Image
-          src={displayImage}
+          src={recipe.displayImage}
           layout="fill"
           className="h-full w-full rounded-3xl"
           alt="Photo of recipe"
@@ -51,20 +47,20 @@ const RecipePage: NextPage<PageProps> = ({
             >
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
-            <p>{likeCount}</p>
+            <p>{recipe.likeCount}</p>
           </div>
-          <p>{dayjs(createdAt.toString()).format("DD/MM/YYYY HH:mm")}</p>
+          <p>{dayjs(recipe.createdAt.toString()).format("DD/MM/YYYY HH:mm")}</p>
         </div>
-        <RecipeTags tags={tags} classes="justify-center" />
+        <RecipeTags tags={recipe.tags} classes="justify-center" />
       </div>
       <div className="flex flex-row gap-10">
         <div className="w-1/3">
           <h2 className="text-2xl mb-2">Ingredients: </h2>
-          <Tiptap content={ingredients} editable={false} />
+          <Tiptap content={recipe.ingredients} editable={false} />
         </div>
         <div className="w-2/3">
           <h2 className="text-2xl mb-2">Method: </h2>
-          <Tiptap content={method} editable={false} />
+          <Tiptap content={recipe.method} editable={false} />
         </div>
       </div>
 
@@ -94,8 +90,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   let recipe = await prisma?.recipe.findFirst({ where: { id } });
+
   const recipeCreator = await prisma?.user.findFirst({
     where: { id: recipe?.userId },
+    select: { firstName: true, lastName: true, image: true },
   });
 
   recipe = JSON.parse(JSON.stringify(recipe));
