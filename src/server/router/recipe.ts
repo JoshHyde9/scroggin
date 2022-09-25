@@ -62,7 +62,7 @@ export const recipeRouter = createRouter()
 
       const loggedInUser = ctx.session.user;
 
-      const recipe = await ctx.prisma.recipe.findFirst({ where: { id } });
+      const recipe = await ctx.prisma.recipe.findUnique({ where: { id } });
 
       if (!recipe) {
         throw new TRPCError({
@@ -94,7 +94,7 @@ export const recipeRouter = createRouter()
 
       const loggedInUser = ctx.session.user;
 
-      const recipe = await ctx.prisma.recipe.findFirst({ where: { id } });
+      const recipe = await ctx.prisma.recipe.findUnique({ where: { id } });
 
       if (!recipe) {
         throw new TRPCError({
