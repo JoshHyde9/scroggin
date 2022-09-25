@@ -21,6 +21,6 @@ export default defineNextConfig({
     defaultLocale: "en",
   },
   images: {
-    domains: ["i.imgur.com", "static01.nyt.com"],
+    domains: ["i.imgur.com", "static01.nyt.com", "cdn.pixabay.com"],
   },
 });
