@@ -5,7 +5,7 @@ interface Props {
 
 export const RecipeTags: React.FC<Props> = ({ tags, classes }: Props) => {
   return (
-    <div className={`flex gap-2 mt-2 ${classes}`}>
+    <div className={`flex gap-2 mt-2 ${classes ?? ""}`}>
       {tags.map((tag: string) => {
         return (
           <p
