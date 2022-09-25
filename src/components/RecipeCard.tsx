@@ -1,38 +1,31 @@
 import dayjs from "dayjs";
 import Image from "next/image";
+import NextLink from "next/link";
 import { IRecipe } from "../server/common/schemas";
+import { RecipeTags } from "./RecipeTags";
 
 interface RecipeCardProps {
   recipe: IRecipe;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({
-  recipe: { name, tags, likeCount, createdAt, displayImage },
+export const RecipeCard: React.FC<RecipeCardProps> = ({
+  recipe: { id, name, tags, likeCount, createdAt, displayImage },
 }: RecipeCardProps) => {
   return (
     <div className="h-52 md:h-64 lg:h-80">
-      <div className="relative h-full">
-        <Image
-          src={displayImage}
-          layout="fill"
-          className="h-full w-full rounded-3xl"
-          alt="Photo of recipe"
-        />
-      </div>
+      <NextLink href={`/recipe/${id}`}>
+        <div className="relative h-full">
+          <Image
+            src={displayImage}
+            layout="fill"
+            className="h-full w-full rounded-3xl hover:cursor-pointer"
+            alt="Photo of recipe"
+          />
+        </div>
+      </NextLink>
       <div className="px-2 mt-2">
         <h1 className="text-lg">{name}</h1>
-        <div className="flex gap-2 mt-2">
-          {tags.map((tag: string) => {
-            return (
-              <p
-                key={tag}
-                className="px-4 py-0.5 bg-purple-500/50 border border-purple-700 text-sm rounded-full"
-              >
-                {tag}
-              </p>
-            );
-          })}
-        </div>
+        <RecipeTags tags={tags} />
         <div className="flex justify-between gap-2 mt-2">
           <div className="flex gap-2">
             <svg
@@ -56,5 +49,3 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     </div>
   );
 };
-
-export default RecipeCard;
