@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -12,11 +13,13 @@ import { trpc } from "../../utils/trpc";
 import { Tiptap } from "../../components/TipTap";
 
 const CreateRecipe: NextPage = () => {
+  const router = useRouter();
   const [error, setError] = useState("");
 
   const { mutate } = trpc.useMutation("recipe.create", {
     onSuccess: () => {
       setError("");
+      router.push("/");
     },
     onError: (error) => {
       setError(error.message);
