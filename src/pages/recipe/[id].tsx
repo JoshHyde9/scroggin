@@ -1,5 +1,10 @@
 import { Recipe, User } from "@prisma/client";
-import { GetServerSideProps, NextPage } from "next";
+import {
+  NextPage,
+  InferGetServerSidePropsType,
+  GetServerSidePropsContext,
+  PreviewData,
+} from "next";
 import { useRouter } from "next/router";
 import { Session } from "next-auth";
 import dayjs from "dayjs";
@@ -11,18 +16,13 @@ import { trpc } from "../../utils/trpc";
 
 import { RecipeTags } from "../../components/RecipeTags";
 import { Tiptap } from "../../components/TipTap";
+import { ParsedUrlQuery } from "querystring";
 
-interface PageProps {
-  recipe: Recipe;
-  recipeCreator: User;
-  session: Session;
-}
-
-const RecipePage: NextPage<PageProps> = ({
+const RecipePage: NextPage = ({
   recipe,
   recipeCreator,
-  session,
-}: PageProps) => {
+  userSession,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
 
   const { mutate: deleteRecipe } = trpc.useMutation(["recipe.delete"], {
@@ -31,7 +31,7 @@ const RecipePage: NextPage<PageProps> = ({
     },
   });
 
-  if (!recipe && !recipeCreator && !session) {
+  if (!recipe || !recipeCreator) {
     return <div>loading...</div>;
   }
 
@@ -94,7 +94,7 @@ const RecipePage: NextPage<PageProps> = ({
           </h3>
         </div>
         {/* If current logged in user is the creator of the recipe */}
-        {session?.user?.id === recipeCreator.id && (
+        {userSession?.user?.id === recipeCreator.id && (
           <div className="flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -139,7 +139,9 @@ const RecipePage: NextPage<PageProps> = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
+) => {
   const id = context.query.id as string | undefined;
 
   if (!id) {
@@ -148,25 +150,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const session = await getServerAuthSession(context);
+  const userSession = await getServerAuthSession(context);
 
   let recipe = await prisma.recipe.findFirst({ where: { id } });
 
+  if (!recipe) {
+    return {
+      props: {},
+    };
+  }
+
   const recipeCreator = await prisma.user.findFirst({
-    where: { id: recipe?.userId },
-    select: { firstName: true, lastName: true, image: true },
+    where: { id: recipe.userId },
+    select: { id: true, firstName: true, lastName: true, image: true },
   });
 
   recipe = JSON.parse(JSON.stringify(recipe));
 
-  if (!session) {
-    return {
-      props: { recipe, recipeCreator },
-    };
-  }
-
   return {
-    props: { recipe, recipeCreator, session },
+    props: { recipe, recipeCreator, userSession },
   };
 };
 
