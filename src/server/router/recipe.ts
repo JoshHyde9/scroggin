@@ -110,9 +110,11 @@ export const recipeRouter = createRouter()
         });
       }
 
+      const tagArray = tags.replace(/ /g, "").split(",");
+
       const updateRecipe = await ctx.prisma.recipe.update({
         where: { id },
-        data: { name, displayImage, method, ingredients, tags },
+        data: { name, displayImage, method, ingredients, tags: tagArray },
       });
 
       return updateRecipe;
