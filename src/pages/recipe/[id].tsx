@@ -7,6 +7,7 @@ import {
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import Image from "next/image";
+import NextLink from "next/link";
 import { ParsedUrlQuery } from "querystring";
 
 import { prisma } from "../../server/db/client";
@@ -16,6 +17,9 @@ import { trpc } from "../../utils/trpc";
 import { RecipeTags } from "../../components/RecipeTags";
 import { Tiptap } from "../../components/TipTap";
 
+/* TODO:
+ * Turn this form into a custom hook
+ */
 const RecipePage: NextPage = ({
   recipe,
   recipeCreator,
@@ -94,20 +98,23 @@ const RecipePage: NextPage = ({
         {/* If current logged in user is the creator of the recipe */}
         {userSession?.user?.id === recipeCreator.id && (
           <div className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
+            <NextLink href={`/recipe/edit/${recipe.id}`}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="stroke-cyan-500 hover:stroke-cyan-400 ease-in-out duration-300 hover:cursor-pointer"
+              >
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </NextLink>
             <button
               onClick={() => deleteRecipe({ id: recipe.id })}
               className="hover:cursor-pointer"
