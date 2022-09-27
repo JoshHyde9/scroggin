@@ -39,11 +39,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
         <RecipeTags tags={tags} />
         <div className="flex justify-between gap-2 mt-2">
           <div className="flex gap-2">
-            <button
-              onClick={() =>
-                likePost({ id, value: hasLoggedInUserLiked ? 1 : -1 })
-              }
-            >
+            <button onClick={() => likePost({ id })}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
