@@ -132,13 +132,9 @@ export const recipeRouter = createRouter()
   .mutation("like", {
     input: z.object({
       id: z.string(),
-      value: z.number(),
     }),
     async resolve({ ctx, input }) {
-      const { id, value } = input;
-
-      const isLike = value !== -1;
-      const realValue = isLike ? 1 : -1;
+      const { id } = input;
 
       const loggedInUser = ctx.session.user;
 
@@ -155,33 +151,27 @@ export const recipeRouter = createRouter()
         where: { userId: loggedInUser.id, recipeId: id },
       });
 
-      if (like && like.value !== realValue) {
-        await ctx.prisma.like.update({
-          where: { recipeId: id, userId: loggedInUser.id },
-          data: { value: realValue },
+      console.log("User liked: ", recipe);
+
+      if (like) {
+        await ctx.prisma.like.delete({
+          where: { recipeId: id },
         });
 
-        const likedPost = await ctx.prisma.recipe.update({
+        const updatedRecipe = await ctx.prisma.recipe.update({
           where: { id },
-          data: { likeCount: recipe.likeCount + 1 },
+          data: { likeCount: recipe.likeCount - 1 },
         });
 
-        return likedPost;
-      } else if (!like) {
+        return updatedRecipe;
+      } else {
         await ctx.prisma.like.create({
           data: {
             userId: loggedInUser.id,
-            recipeId: recipe.id,
-            value: realValue,
+            recipeId: id,
+            value: recipe.likeCount + 1,
           },
         });
-
-        const likedPost = await ctx.prisma.recipe.update({
-          where: { id },
-          data: { likeCount: realValue },
-        });
-
-        return likedPost;
       }
     },
   })
