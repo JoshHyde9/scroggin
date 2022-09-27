@@ -59,7 +59,7 @@ const RecipePage: NextPage = ({
       <div className="max-w-md mx-auto my-2">
         <div className="flex justify-between gap-2">
           <div className="flex gap-2">
-            <button onClick={() => likePost({ id: recipe.id, value: 1 })}>
+            <button onClick={() => likePost({ id: recipe.id })}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
