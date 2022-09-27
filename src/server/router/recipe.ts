@@ -14,11 +14,20 @@ export const recipeRouter = createRouter()
       if (!allRecipes) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "No posts were found.",
+          message: "No recipes were found.",
         });
       }
 
       return allRecipes;
+    },
+  })
+  .query("getByID", {
+    input: z.object({ id: z.string() }),
+    async resolve({ ctx, input }) {
+      const { id } = input;
+      const recipe = await ctx.prisma.recipe.findUnique({ where: { id } });
+
+      return recipe;
     },
   })
   .middleware(async ({ ctx, next }) => {
@@ -67,7 +76,7 @@ export const recipeRouter = createRouter()
       if (!recipe) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Recipe not found. ",
+          message: "Recipe does not exist.",
         });
       }
 
@@ -99,7 +108,7 @@ export const recipeRouter = createRouter()
       if (!recipe) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Recipe does not exist. ",
+          message: "Recipe does not exist.",
         });
       }
 
@@ -118,5 +127,80 @@ export const recipeRouter = createRouter()
       });
 
       return updateRecipe;
+    },
+  })
+  .mutation("like", {
+    input: z.object({
+      id: z.string(),
+      value: z.number(),
+    }),
+    async resolve({ ctx, input }) {
+      const { id, value } = input;
+
+      const isLike = value !== -1;
+      const realValue = isLike ? 1 : -1;
+
+      const loggedInUser = ctx.session.user;
+
+      const recipe = await ctx.prisma.recipe.findUnique({ where: { id } });
+
+      if (!recipe) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Recipe does not exist. ",
+        });
+      }
+
+      const like = await ctx.prisma.like.findFirst({
+        where: { userId: loggedInUser.id, recipeId: id },
+      });
+
+      if (like && like.value !== realValue) {
+        await ctx.prisma.like.update({
+          where: { recipeId: id, userId: loggedInUser.id },
+          data: { value: realValue },
+        });
+
+        const likedPost = await ctx.prisma.recipe.update({
+          where: { id },
+          data: { likeCount: recipe.likeCount + 1 },
+        });
+
+        return likedPost;
+      } else if (!like) {
+        await ctx.prisma.like.create({
+          data: {
+            userId: loggedInUser.id,
+            recipeId: recipe.id,
+            value: realValue,
+          },
+        });
+
+        const likedPost = await ctx.prisma.recipe.update({
+          where: { id },
+          data: { likeCount: realValue },
+        });
+
+        return likedPost;
+      }
+    },
+  })
+  .query("getUserLikes", {
+    input: z.object({ userId: z.string().optional() }),
+    async resolve({ ctx, input }) {
+      const { userId } = input;
+
+      const userLikedRecipes = await ctx.prisma.like.findMany({
+        where: { userId },
+      });
+
+      if (!userLikedRecipes) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User does not have any likes recipes.",
+        });
+      }
+
+      return userLikedRecipes;
     },
   });
