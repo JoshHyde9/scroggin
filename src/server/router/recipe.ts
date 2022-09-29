@@ -25,9 +25,23 @@ export const recipeRouter = createRouter()
     input: z.object({ id: z.string() }),
     async resolve({ ctx, input }) {
       const { id } = input;
-      const recipe = await ctx.prisma.recipe.findUnique({ where: { id } });
+
+      const recipe = await ctx.prisma.recipe.findUnique({
+        where: { id },
+      });
 
       return recipe;
+    },
+  })
+  .query("getRecipeCreator", {
+    input: z.object({ userId: z.string() }),
+    async resolve({ ctx, input }) {
+      const { userId } = input;
+      const recipeCreator = await ctx.prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      return recipeCreator;
     },
   })
   .middleware(async ({ ctx, next }) => {
@@ -150,8 +164,6 @@ export const recipeRouter = createRouter()
       const like = await ctx.prisma.like.findFirst({
         where: { userId: loggedInUser.id, recipeId: id },
       });
-
-      console.log("User liked: ", recipe);
 
       if (like) {
         await ctx.prisma.like.delete({
