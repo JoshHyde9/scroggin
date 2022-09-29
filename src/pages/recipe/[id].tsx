@@ -26,6 +26,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const utils = trpc.useContext();
   const router = useRouter();
+  const { data: userSession } = useSession();
 
   const { mutate: deleteRecipe } = trpc.useMutation(["recipe.delete"], {
     onSuccess: () => {
@@ -59,8 +60,6 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     "recipe.getRecipeCreator",
     { userId: recipe.userId },
   ]);
-
-  const { data: userSession } = useSession();
 
   if (!recipeCreator) {
     return <div>loading...</div>;
