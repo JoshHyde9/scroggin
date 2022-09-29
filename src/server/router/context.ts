@@ -13,9 +13,9 @@ type CreateContextOptions = {
  * - testing, where we dont have to Mock Next.js' req/res
  * - trpc's `createSSGHelpers` where we don't have req/res
  **/
-export const createContextInner = async (opts: CreateContextOptions) => {
+export const createContextInner = async (opts?: CreateContextOptions) => {
   return {
-    session: opts.session,
+    session: opts?.session,
     prisma,
   };
 };
