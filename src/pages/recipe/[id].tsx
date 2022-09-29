@@ -1,30 +1,29 @@
 import {
   NextPage,
-  InferGetServerSidePropsType,
-  GetServerSidePropsContext,
-  PreviewData,
+  GetStaticPropsContext,
+  GetStaticPaths,
+  InferGetStaticPropsType,
 } from "next";
+import { createSSGHelpers } from "@trpc/react/ssg";
+import superjson from "superjson";
+
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
 import Image from "next/image";
 import NextLink from "next/link";
-import { ParsedUrlQuery } from "querystring";
 
 import { prisma } from "../../server/db/client";
-import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { trpc } from "../../utils/trpc";
 
 import { RecipeTags } from "../../components/RecipeTags";
 import { Tiptap } from "../../components/TipTap";
+import { appRouter } from "../../server/router";
+import { createContextInner } from "../../server/router/context";
+import { useSession } from "next-auth/react";
 
-/* TODO:
- * Turn this form into a custom hook
- */
-const RecipePage: NextPage = ({
-  recipe,
-  recipeCreator,
-  userSession,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
+  id,
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const utils = trpc.useContext();
   const router = useRouter();
 
@@ -40,7 +39,30 @@ const RecipePage: NextPage = ({
     },
   });
 
-  if (!recipe || !recipeCreator) {
+  if (!id) {
+    return <div>loading...</div>;
+  }
+
+  const recipeQuery = trpc.useQuery(["recipe.getByID", { id }]);
+
+  if (recipeQuery.status !== "success") {
+    return <div>loading...</div>;
+  }
+
+  const { data: recipe } = recipeQuery;
+
+  if (!recipe || !recipe.userId) {
+    return <div>loading...</div>;
+  }
+
+  const { data: recipeCreator } = trpc.useQuery([
+    "recipe.getRecipeCreator",
+    { userId: recipe.userId },
+  ]);
+
+  const { data: userSession } = useSession();
+
+  if (!recipeCreator) {
     return <div>loading...</div>;
   }
 
@@ -153,36 +175,42 @@ const RecipePage: NextPage = ({
   );
 };
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
-) => {
-  const id = context.query.id as string | undefined;
-
-  if (!id) {
-    return {
-      props: {},
-    };
-  }
-
-  const userSession = await getServerAuthSession(context);
-
-  let recipe = await prisma.recipe.findFirst({ where: { id } });
-
-  if (!recipe) {
-    return {
-      props: {},
-    };
-  }
-
-  const recipeCreator = await prisma.user.findFirst({
-    where: { id: recipe.userId },
-    select: { id: true, firstName: true, lastName: true, image: true },
+export async function getStaticProps(
+  context: GetStaticPropsContext<{ id: string }>
+) {
+  const ssg = createSSGHelpers({
+    router: appRouter,
+    ctx: await createContextInner(),
+    transformer: superjson,
   });
 
-  recipe = JSON.parse(JSON.stringify(recipe));
+  const id = context.params?.id as string;
+
+  console.log("ID: ", id);
+
+  await ssg.fetchQuery("recipe.getByID", { id });
 
   return {
-    props: { recipe, recipeCreator, userSession },
+    props: {
+      trpcState: ssg.dehydrate(),
+      id,
+    },
+    revalidate: 1,
+  };
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const recipes = await prisma.recipe.findMany({
+    select: { id: true },
+  });
+
+  return {
+    paths: recipes.map((recipe) => ({
+      params: {
+        id: recipe.id,
+      },
+    })),
+    fallback: "blocking",
   };
 };
 
