@@ -36,9 +36,5 @@ export const Tiptap: React.FC<TipTapProps> = ({
     return null;
   }
 
-  if (editable) {
-    editor.commands.toggleOrderedList();
-  }
-
   return <EditorContent editor={editor} />;
 };
