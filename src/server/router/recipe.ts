@@ -161,29 +161,31 @@ export const recipeRouter = createRouter()
         });
       }
 
-      const like = await ctx.prisma.like.findFirst({
+      const isPostLiked = await ctx.prisma.like.findFirst({
         where: { userId: loggedInUser.id, recipeId: id },
       });
 
-      if (like) {
-        await ctx.prisma.like.delete({
-          where: { recipeId: id },
-        });
-
-        const updatedRecipe = await ctx.prisma.recipe.update({
-          where: { id },
-          data: { likeCount: recipe.likeCount - 1 },
-        });
+      if (!isPostLiked) {
+        const [like, likedRecipe] = await ctx.prisma.$transaction([
+          ctx.prisma.like.create({
+            data: { userId: loggedInUser.id, recipeId: recipe.id, value: 1 },
+          }),
+          ctx.prisma.recipe.update({
+            where: { id: recipe.id },
+            data: { likeCount: recipe.likeCount + 1 },
+          }),
+        ]);
+        return [like, likedRecipe];
+      } else {
+        const [updatedRecipe] = await ctx.prisma.$transaction([
+          ctx.prisma.recipe.update({
+            where: { id: recipe.id },
+            data: { likeCount: recipe.likeCount - 1 },
+          }),
+          ctx.prisma.like.delete({ where: { recipeId: recipe.id } }),
+        ]);
 
         return updatedRecipe;
-      } else {
-        await ctx.prisma.like.create({
-          data: {
-            userId: loggedInUser.id,
-            recipeId: id,
-            value: recipe.likeCount + 1,
-          },
-        });
       }
     },
   })
