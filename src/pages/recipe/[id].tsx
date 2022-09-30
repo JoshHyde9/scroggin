@@ -68,16 +68,16 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   return (
     <div className="container mx-auto max-w-5xl">
       <h1 className="text-4xl text-center italic">{recipe.name}</h1>
-      <div className="relative h-80 w-3/5 block mx-auto my-5">
+      <div className="relative h-60 w-11/12 block mx-auto my-5 lg:w-3/5">
         <Image
           src={recipe.displayImage}
           layout="fill"
-          className="h-full w-full rounded-3xl"
+          className="h-full w-full px-5 rounded-3xl"
           alt="Photo of recipe"
           priority
         />
       </div>
-      <div className="max-w-md mx-auto my-2">
+      <div className="max-w-md mx-auto my-2 px-5">
         <div className="flex justify-between gap-2">
           <div className="flex gap-2">
             <button onClick={() => likePost({ id: recipe.id })}>
@@ -101,18 +101,18 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         </div>
         <RecipeTags tags={recipe.tags} classes="justify-center" />
       </div>
-      <div className="flex flex-row gap-10">
-        <div className="w-1/3">
+      <div className="flex flex-col gap-10 px-5 lg:flex-row">
+        <div className="w-full lg:w-1/3">
           <h2 className="text-2xl mb-2">Ingredients: </h2>
           <Tiptap content={recipe.ingredients} editable={false} />
         </div>
-        <div className="w-2/3">
+        <div className="w-full lg:w-2/3">
           <h2 className="text-2xl mb-2">Method: </h2>
           <Tiptap content={recipe.method} editable={false} />
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between px-5">
         <div className="flex items-center gap-2">
           <div className="h-12 w-12 relative">
             <Image
