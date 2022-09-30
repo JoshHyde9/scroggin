@@ -26,6 +26,7 @@ export default defineNextConfig({
       "static01.nyt.com",
       "cdn.pixabay.com",
       "www.sbs.com.au",
+      "joshhyde9.github.io",
     ],
   },
 });
