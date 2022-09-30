@@ -28,18 +28,6 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   const router = useRouter();
   const { data: userSession } = useSession();
 
-  const { mutate: deleteRecipe } = trpc.useMutation(["recipe.delete"], {
-    onSuccess: () => {
-      router.push("/");
-    },
-  });
-
-  const { mutate: likePost } = trpc.useMutation(["recipe.like"], {
-    onSuccess: () => {
-      utils.invalidateQueries(["recipe.getByID", { id: recipe!.id }]);
-    },
-  });
-
   if (!id) {
     return <div>loading...</div>;
   }
@@ -52,9 +40,21 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   const { data: recipe } = recipeQuery;
 
+  const { mutate: deleteRecipe } = trpc.useMutation(["recipe.delete"], {
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
+
   if (!recipe || !recipe.userId) {
     return <div>loading...</div>;
   }
+
+  const { mutate: likePost } = trpc.useMutation(["recipe.like"], {
+    onSuccess: () => {
+      utils.invalidateQueries(["recipe.getByID", { id: recipe.id }]);
+    },
+  });
 
   const { data: recipeCreator } = trpc.useQuery([
     "recipe.getRecipeCreator",
@@ -68,7 +68,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   return (
     <div className="container mx-auto max-w-5xl">
       <h1 className="text-4xl text-center italic">{recipe.name}</h1>
-      <div className="relative h-60 w-11/12 block mx-auto my-5 lg:w-3/5">
+      <div className="relative h-60 w-11/12 block mx-auto my-5 lg:w-1/2">
         <Image
           src={recipe.displayImage}
           layout="fill"
@@ -80,21 +80,41 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       <div className="max-w-md mx-auto my-2 px-5">
         <div className="flex justify-between gap-2">
           <div className="flex gap-2">
-            <button onClick={() => likePost({ id: recipe.id })}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-              </svg>
-            </button>
+            {!userSession?.user ? (
+              <NextLink href="/login">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="hover:cursor-pointer"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </NextLink>
+            ) : (
+              <button onClick={() => likePost({ id: recipe.id })}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </button>
+            )}
+
             <p>{recipe.likeCount}</p>
           </div>
           <p>{dayjs(recipe.createdAt.toString()).format("DD/MM/YYYY HH:mm")}</p>
