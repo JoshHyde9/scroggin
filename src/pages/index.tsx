@@ -12,11 +12,11 @@ interface PageProps {
 }
 
 const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
+  const { data: userSession } = useSession();
+
   if (!recipes) {
     return <div>No recipes found!</div>;
   }
-
-  const { data: userSession } = useSession();
 
   const likedRecipesQuery = trpc.useQuery([
     "recipe.getUserLikes",
@@ -36,7 +36,7 @@ const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-10 px-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
       {recipes.map((recipe: IRecipe) => {
         return likedRecipes.map((likedRecipe: ILike) => {
           return (

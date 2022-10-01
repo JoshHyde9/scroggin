@@ -33,12 +33,11 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
     "hover:fill-red-400 hover:stroke-red-400 ease-in-out duration-300";
 
   return (
-    <div className="h-52 md:h-64 lg:h-80">
+    <div className="w-full md:w-1/2 md:h-64 lg:h-64 lg:w-1/3 xl:h-80 xl:w-1/4 2xl:w-1/5">
       <NextLink href={`/recipe/${id}`}>
         <div className="relative h-full">
-          <Image
+          <img
             src={displayImage}
-            layout="fill"
             className="h-full w-full rounded-3xl hover:cursor-pointer"
             alt="Photo of recipe"
           />
