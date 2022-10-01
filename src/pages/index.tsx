@@ -18,16 +18,25 @@ const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
     return <div>No recipes found!</div>;
   }
 
+  if (!userSession) {
+    return (
+      <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
+        {recipes.map((recipe: IRecipe) => {
+          return <RecipeCard key={recipe.id} recipe={recipe} />;
+        })}
+      </div>
+    );
+  }
+
   const likedRecipesQuery = trpc.useQuery([
     "recipe.getUserLikes",
     { userId: userSession?.user?.id },
   ]);
-
   const { data: likedRecipes } = likedRecipesQuery;
 
-  if (!userSession || !likedRecipes || likedRecipes.length <= 0) {
+  if (!likedRecipes) {
     return (
-      <div className="grid grid-cols-1 gap-10 px-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
         {recipes.map((recipe: IRecipe) => {
           return <RecipeCard key={recipe.id} recipe={recipe} />;
         })}
