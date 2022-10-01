@@ -49,6 +49,29 @@ export const recipeRouter = createRouter()
       return isLiked;
     },
   })
+  .query("getUserLikes", {
+    input: z.object({ userId: z.string().optional() }),
+    async resolve({ ctx, input }) {
+      const { userId } = input;
+
+      if (!userId) {
+        return null;
+      }
+
+      const userLikedRecipes = await ctx.prisma.like.findMany({
+        where: { userId },
+      });
+
+      if (!userLikedRecipes) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User does not have any likes recipes.",
+        });
+      }
+
+      return userLikedRecipes;
+    },
+  })
   .query("getRecipeCreator", {
     input: z.object({ userId: z.string() }),
     async resolve({ ctx, input }) {
@@ -203,24 +226,5 @@ export const recipeRouter = createRouter()
 
         return updatedRecipe;
       }
-    },
-  })
-  .query("getUserLikes", {
-    input: z.object({ userId: z.string().optional() }),
-    async resolve({ ctx, input }) {
-      const { userId } = input;
-
-      const userLikedRecipes = await ctx.prisma.like.findMany({
-        where: { userId },
-      });
-
-      if (!userLikedRecipes) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "User does not have any likes recipes.",
-        });
-      }
-
-      return userLikedRecipes;
     },
   });
