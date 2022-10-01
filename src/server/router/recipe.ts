@@ -33,6 +33,22 @@ export const recipeRouter = createRouter()
       return recipe;
     },
   })
+  .query("hasUserLikedRecipe", {
+    input: z.object({ userId: z.string().optional(), recipeId: z.string() }),
+    async resolve({ ctx, input }) {
+      const { userId, recipeId } = input;
+
+      if (!userId) {
+        return null;
+      }
+
+      const isLiked = await ctx.prisma.like.findFirst({
+        where: { userId, recipeId },
+      });
+
+      return isLiked;
+    },
+  })
   .query("getRecipeCreator", {
     input: z.object({ userId: z.string() }),
     async resolve({ ctx, input }) {
@@ -187,22 +203,6 @@ export const recipeRouter = createRouter()
 
         return updatedRecipe;
       }
-    },
-  })
-  .query("hasUserLikedRecipe", {
-    input: z.object({ userId: z.string().optional(), recipeId: z.string() }),
-    async resolve({ ctx, input }) {
-      const { userId, recipeId } = input;
-
-      if (!userId) {
-        return null;
-      }
-
-      const isLiked = await ctx.prisma.like.findFirst({
-        where: { userId, recipeId },
-      });
-
-      return isLiked;
     },
   })
   .query("getUserLikes", {
