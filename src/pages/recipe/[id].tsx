@@ -20,7 +20,6 @@ import { Tiptap } from "../../components/TipTap";
 import { appRouter } from "../../server/router";
 import { createContextInner } from "../../server/router/context";
 import { useSession } from "next-auth/react";
-import { ILike } from "../../server/common/schemas";
 
 const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   id,
