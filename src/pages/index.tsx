@@ -12,20 +12,10 @@ interface PageProps {
 }
 
 const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
-  const { data: userSession } = useSession();
+  const { data: userSession, status } = useSession();
 
   if (!recipes) {
     return <div>No recipes found!</div>;
-  }
-
-  if (!userSession) {
-    return (
-      <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
-        {recipes.map((recipe: IRecipe) => {
-          return <RecipeCard key={recipe.id} recipe={recipe} />;
-        })}
-      </div>
-    );
   }
 
   const likedRecipesQuery = trpc.useQuery([
@@ -34,7 +24,12 @@ const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
   ]);
   const { data: likedRecipes } = likedRecipesQuery;
 
-  if (!likedRecipes) {
+  if (
+    status === "unauthenticated" ||
+    !userSession ||
+    !likedRecipes ||
+    likedRecipes.length <= 0
+  ) {
     return (
       <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
         {recipes.map((recipe: IRecipe) => {
