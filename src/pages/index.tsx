@@ -14,15 +14,16 @@ interface PageProps {
 const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
   const { data: userSession, status } = useSession();
 
-  if (!recipes) {
-    return <div>No recipes found!</div>;
-  }
-
   const likedRecipesQuery = trpc.useQuery([
     "recipe.getUserLikes",
     { userId: userSession?.user?.id },
   ]);
+
   const { data: likedRecipes } = likedRecipesQuery;
+
+  if (!recipes) {
+    return <div>No recipes found!</div>;
+  }
 
   if (
     status === "unauthenticated" ||
