@@ -1,27 +1,29 @@
-import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-  NextPage,
-  PreviewData,
-} from "next/types";
-import { ParsedUrlQuery } from "querystring";
+import type { GetStaticProps, NextPage } from "next/types";
 
 import { prisma } from "../server/db/client";
-import { IRecipe } from "../server/common/schemas";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
+import { ILike, IRecipe } from "../server/common/schemas";
 
 import { RecipeCard } from "../components/RecipeCard";
+import { useSession } from "next-auth/react";
+import { trpc } from "../utils/trpc";
 
-const Home: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({
-  recipes,
-  userSession,
-  likedRecipes,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+interface PageProps {
+  recipes: IRecipe[] | null;
+}
+
+const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
   if (!recipes) {
     return <div>No recipes found!</div>;
   }
+
+  const { data: userSession } = useSession();
+
+  const likedRecipesQuery = trpc.useQuery([
+    "recipe.getUserLikes",
+    { userId: userSession?.user?.id },
+  ]);
+
+  const { data: likedRecipes } = likedRecipesQuery;
 
   if (!userSession || !likedRecipes || likedRecipes.length <= 0) {
     return (
@@ -35,50 +37,33 @@ const Home: NextPage<
 
   return (
     <div className="grid grid-cols-1 gap-10 px-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {recipes.map((recipe: IRecipe, i) => {
-        if (userSession.user!.id === likedRecipes[i]!.userId) {
+      {recipes.map((recipe: IRecipe) => {
+        return likedRecipes.map((likedRecipe: ILike) => {
           return (
             <RecipeCard
               key={recipe.id}
               recipe={recipe}
-              hasLoggedInUserLiked={true}
+              hasUserLiked={
+                userSession.user?.id === likedRecipe.userId &&
+                likedRecipe.recipeId === recipe.id
+                  ? true
+                  : false
+              }
             />
           );
-        }
+        });
       })}
     </div>
   );
 };
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
-) => {
-  const userSession = await getServerAuthSession(context);
-
+export const getStaticProps: GetStaticProps<PageProps> = async () => {
   let recipes = await prisma.recipe.findMany();
 
   recipes = JSON.parse(JSON.stringify(recipes));
 
-  if (!userSession?.user) {
-    return {
-      props: {
-        recipes,
-      },
-    };
-  }
-
-  let likedRecipes = await prisma.like.findMany({
-    where: { userId: userSession.user.id },
-  });
-
-  likedRecipes = JSON.parse(JSON.stringify(likedRecipes));
-
-  if (!likedRecipes) {
-    return { props: { recipes, userSession } };
-  }
-
   return {
-    props: { recipes, userSession, likedRecipes },
+    props: { recipes },
   };
 };
 
