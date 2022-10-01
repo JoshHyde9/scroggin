@@ -62,8 +62,8 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     onSuccess: () => {
       utils.invalidateQueries(["recipe.getByID", { id: recipe.id }]);
       utils.invalidateQueries([
-        "recipe.getUserLikes",
-        { userId: userSession?.user?.id },
+        "recipe.hasUserLikedRecipe",
+        { userId: userSession?.user?.id, recipeId: recipe.id },
       ]);
     },
   });
