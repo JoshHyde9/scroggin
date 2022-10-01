@@ -20,6 +20,7 @@ import { Tiptap } from "../../components/TipTap";
 import { appRouter } from "../../server/router";
 import { createContextInner } from "../../server/router/context";
 import { useSession } from "next-auth/react";
+import { ILike } from "../../server/common/schemas";
 
 const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   id,
@@ -50,9 +51,26 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     return <div>loading...</div>;
   }
 
-  const { mutate: likePost } = trpc.useMutation(["recipe.like"], {
+  const likedRecipesQuery = trpc.useQuery([
+    "recipe.getUserLikes",
+    { userId: userSession?.user?.id },
+  ]);
+
+  const { data: likedRecipes } = likedRecipesQuery;
+
+  const isLiked = likedRecipes?.map((likedRecipe: ILike) => {
+    userSession?.user!.id === likedRecipe.userId &&
+      likedRecipe.recipeId === recipe.id;
+    return true;
+  });
+
+  const { mutate: likeRecipe } = trpc.useMutation(["recipe.like"], {
     onSuccess: () => {
       utils.invalidateQueries(["recipe.getByID", { id: recipe.id }]);
+      utils.invalidateQueries([
+        "recipe.getUserLikes",
+        { userId: userSession?.user?.id },
+      ]);
     },
   });
 
@@ -92,13 +110,13 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="hover:cursor-pointer"
+                  className="hover:cursor-pointer hover:fill-red-400 hover:stroke-red-400 ease-in-out duration-300"
                 >
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
               </NextLink>
             ) : (
-              <button onClick={() => likePost({ id: recipe.id })}>
+              <button onClick={() => likeRecipe({ id: recipe.id })}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -109,6 +127,11 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className={
+                    isLiked![0]
+                      ? "stroke-red-500 fill-red-500 hover:fill-red-400 hover:stroke-red-400 ease-in-out duration-300"
+                      : "hover:fill-red-400 hover:stroke-red-400 ease-in-out duration-300"
+                  }
                 >
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
@@ -204,8 +227,6 @@ export async function getStaticProps(
   });
 
   const id = context.params?.id as string;
-
-  console.log("ID: ", id);
 
   await ssg.fetchQuery("recipe.getByID", { id });
 
