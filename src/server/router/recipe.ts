@@ -189,6 +189,22 @@ export const recipeRouter = createRouter()
       }
     },
   })
+  .query("hasUserLikedRecipe", {
+    input: z.object({ userId: z.string().optional(), recipeId: z.string() }),
+    async resolve({ ctx, input }) {
+      const { userId, recipeId } = input;
+
+      if (!userId) {
+        return null;
+      }
+
+      const isLiked = await ctx.prisma.like.findFirst({
+        where: { userId, recipeId },
+      });
+
+      return isLiked;
+    },
+  })
   .query("getUserLikes", {
     input: z.object({ userId: z.string().optional() }),
     async resolve({ ctx, input }) {
