@@ -51,18 +51,12 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     return <div>loading...</div>;
   }
 
-  const likedRecipesQuery = trpc.useQuery([
-    "recipe.getUserLikes",
-    { userId: userSession?.user?.id },
+  const isRecipeLikedQuery = trpc.useQuery([
+    "recipe.hasUserLikedRecipe",
+    { recipeId: recipe.id, userId: userSession?.user?.id },
   ]);
 
-  const { data: likedRecipes } = likedRecipesQuery;
-
-  const isLiked = likedRecipes?.map((likedRecipe: ILike) => {
-    userSession?.user!.id === likedRecipe.userId &&
-      likedRecipe.recipeId === recipe.id;
-    return true;
-  });
+  const { data: isRecipeLiked } = isRecipeLikedQuery;
 
   const { mutate: likeRecipe } = trpc.useMutation(["recipe.like"], {
     onSuccess: () => {
@@ -128,7 +122,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   className={
-                    isLiked![0]
+                    isRecipeLiked
                       ? "stroke-red-500 fill-red-500 hover:fill-red-400 hover:stroke-red-400 ease-in-out duration-300"
                       : "hover:fill-red-400 hover:stroke-red-400 ease-in-out duration-300"
                   }
