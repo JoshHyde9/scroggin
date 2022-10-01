@@ -2,7 +2,7 @@
 import { createRouter } from "./context";
 import superjson from "superjson";
 
-import { protectedExampleRouter } from "./protected-example-router";
+import { protectedExampleRouter } from "./protected-router";
 import { userRouter } from "./user";
 import { recipeRouter } from "./recipe";
 
