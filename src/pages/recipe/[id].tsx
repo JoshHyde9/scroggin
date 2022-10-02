@@ -20,6 +20,7 @@ import { Tiptap } from "../../components/TipTap";
 import { appRouter } from "../../server/router";
 import { createContextInner } from "../../server/router/context";
 import { useSession } from "next-auth/react";
+import { RecipeLoadingSkeleton } from "../../components/layout/RecipeLoadingSkeleton";
 
 const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   id,
@@ -73,7 +74,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   ]);
 
   if (!recipeCreator) {
-    return <div>loading...</div>;
+    return <RecipeLoadingSkeleton />;
   }
 
   return (
