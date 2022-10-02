@@ -24,22 +24,18 @@ import { RecipeLoadingSkeleton } from "../../components/layout/RecipeLoadingSkel
 
 const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   id,
+  recipe,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const utils = trpc.useContext();
   const router = useRouter();
   const { data: userSession } = useSession();
 
-  if (!id) {
-    return <div>loading...</div>;
+  // TODO: If there is no recipe, redirect to 404
+  if (!recipe) {
+    return <RecipeLoadingSkeleton />;
   }
 
-  const recipeQuery = trpc.useQuery(["recipe.getByID", { id }]);
-
-  if (recipeQuery.status !== "success") {
-    return <div>loading...</div>;
-  }
-
-  const { data: recipe } = recipeQuery;
+  const { user: recipeCreator } = recipe;
 
   const { mutate: deleteRecipe } = trpc.useMutation(["recipe.delete"], {
     onSuccess: () => {
@@ -47,35 +43,25 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     },
   });
 
-  if (!recipe || !recipe.userId) {
-    return <div>loading...</div>;
-  }
-
   const isRecipeLikedQuery = trpc.useQuery([
     "recipe.hasUserLikedRecipe",
-    { recipeId: recipe.id, userId: userSession?.user?.id },
+    { recipeId: id, userId: userSession?.user?.id },
   ]);
 
   const { data: isRecipeLiked } = isRecipeLikedQuery;
 
   const { mutate: likeRecipe } = trpc.useMutation(["recipe.like"], {
     onSuccess: () => {
-      utils.invalidateQueries(["recipe.getByID", { id: recipe.id }]);
+      utils.invalidateQueries([
+        "recipe.getRecipeAndCreatorByID",
+        { recipeId: id },
+      ]);
       utils.invalidateQueries([
         "recipe.hasUserLikedRecipe",
-        { userId: userSession?.user?.id, recipeId: recipe.id },
+        { userId: userSession?.user?.id, recipeId: id },
       ]);
     },
   });
-
-  const { data: recipeCreator } = trpc.useQuery([
-    "recipe.getRecipeCreator",
-    { userId: recipe.userId },
-  ]);
-
-  if (!recipeCreator) {
-    return <RecipeLoadingSkeleton />;
-  }
 
   return (
     <div className="container mx-auto max-w-5xl">
@@ -110,7 +96,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
                 </svg>
               </NextLink>
             ) : (
-              <button onClick={() => likeRecipe({ id: recipe.id })}>
+              <button onClick={() => likeRecipe({ id })}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -165,7 +151,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
         {/* If current logged in user is the creator of the recipe */}
         {userSession?.user?.id === recipeCreator.id && (
           <div className="flex items-center gap-2">
-            <NextLink href={`/recipe/edit/${recipe.id}`}>
+            <NextLink href={`/recipe/edit/${id}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -183,7 +169,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               </svg>
             </NextLink>
             <button
-              onClick={() => deleteRecipe({ id: recipe.id })}
+              onClick={() => deleteRecipe({ id })}
               className="hover:cursor-pointer"
             >
               <svg
@@ -222,12 +208,15 @@ export async function getStaticProps(
 
   const id = context.params?.id as string;
 
-  await ssg.fetchQuery("recipe.getByID", { id });
+  const recipe = await ssg.fetchQuery("recipe.getRecipeAndCreatorByID", {
+    recipeId: id,
+  });
 
   return {
     props: {
       trpcState: ssg.dehydrate(),
       id,
+      recipe: JSON.parse(JSON.stringify(recipe)),
     },
     revalidate: 1,
   };

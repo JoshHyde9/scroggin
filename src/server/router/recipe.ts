@@ -22,9 +22,13 @@ export const recipeRouter = createRouter()
     },
   })
   .query("getByID", {
-    input: z.object({ id: z.string() }),
+    input: z.object({ id: z.string().optional() }),
     async resolve({ ctx, input }) {
       const { id } = input;
+
+      if (!id) {
+        return null;
+      }
 
       const recipe = await ctx.prisma.recipe.findUnique({
         where: { id },
@@ -33,8 +37,24 @@ export const recipeRouter = createRouter()
       return recipe;
     },
   })
+  .query("getRecipeAndCreatorByID", {
+    input: z.object({ recipeId: z.string() }),
+    async resolve({ ctx, input }) {
+      const { recipeId } = input;
+
+      const recipeAndCreator = await ctx.prisma.recipe.findUnique({
+        where: { id: recipeId },
+        include: { user: true },
+      });
+
+      return recipeAndCreator;
+    },
+  })
   .query("hasUserLikedRecipe", {
-    input: z.object({ userId: z.string().optional(), recipeId: z.string() }),
+    input: z.object({
+      userId: z.string().optional(),
+      recipeId: z.string(),
+    }),
     async resolve({ ctx, input }) {
       const { userId, recipeId } = input;
 
