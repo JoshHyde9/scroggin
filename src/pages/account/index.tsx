@@ -43,7 +43,7 @@ const UserAccount: NextPage<PageProps> = ({ userSession, userRecipes }) => {
       {showUserRecipes && (
         <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
           {userRecipes?.map((recipe: IRecipe) => {
-            return <RecipeCard recipe={recipe} />;
+            return <RecipeCard recipe={recipe} key={recipe.id} />;
           })}
         </div>
       )}
