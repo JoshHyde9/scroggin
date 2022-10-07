@@ -45,3 +45,9 @@ export const likeSchema = z.object({
   value: z.number(),
 });
 export type ILike = z.infer<typeof likeSchema>;
+
+export const updateUserSchema = registerSchema.extend({
+  image: z.string().url()
+});
+
+export type IUpdateUserSchema = z.infer<typeof updateUserSchema>;
