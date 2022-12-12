@@ -71,7 +71,7 @@ To try and build something cool.
 
 ## Project Status
 
-Project is: _in progress_. It will also be changing a **a lot** (when I can be bothered).
+Project is: _in progress_. It will also be changing **a lot** (when I can be bothered).
 
 tRPC will be updated to v10 and most likely Next 13 for the major changes, rest of the packages will be updated to their latest versions eventually (looking at you TypeScript v5.)
 
