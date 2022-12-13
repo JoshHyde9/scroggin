@@ -27,12 +27,22 @@ export const recipeRouter = createRouter()
       const { id } = input;
 
       if (!id) {
-        return null;
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Recipe not found.",
+        });
       }
 
       const recipe = await ctx.prisma.recipe.findUnique({
         where: { id },
       });
+
+      if (!recipe) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Recipe not found.",
+        });
+      }
 
       return recipe;
     },
