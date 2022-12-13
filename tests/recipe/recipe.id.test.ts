@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { appRouter } from "../../src/server/router";
 import { createContextInner } from "../../src/server/router/context";
 
-describe("recipe@getAll", async () => {
+describe("recipe@getByID", async () => {
   const ctx = await createContextInner({ session: null });
   const caller = appRouter.createCaller(ctx);
 
