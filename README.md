@@ -20,7 +20,7 @@ Recipes but with none of the extra additional essays before the method.
   - [Project Status](#project-status)
   - [Room for Improvement](#room-for-improvement)
     - [Room for improvement](#room-for-improvement-1)
-    - [To do:](#to-do)
+    - [To do](#to-do)
   - [Acknowledgements](#acknowledgements)
   - [Contact](#contact)
 
@@ -87,7 +87,7 @@ tRPC will be updated to v10 and most likely Next 13 for the major changes, rest 
   - Category labels are inconsistent.
   - Method and ingredients should be on tabs for mobile devices (this avoids having to scroll between the two.)
 
-### To do:
+### To do
 
 - Create categories
   - Create a category table instead of relying on an array of strings (who thought this was a good idea).
