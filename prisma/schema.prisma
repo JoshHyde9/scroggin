@@ -82,7 +82,7 @@ model Like {
     value     Int
     userId    String
     user      User     @relation(fields: [userId], references: [id])
-    recipeId  String
+    recipeId  String   @unique
     recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
