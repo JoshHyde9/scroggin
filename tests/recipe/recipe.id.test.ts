@@ -16,8 +16,10 @@ describe("recipe@getByID", async () => {
     );
   });
 
+  const firstRecipe = await ctx.prisma.recipe.findFirstOrThrow();
+
   const recipe = await caller.query("recipe.getByID", {
-    id: "6afb3dbc-35d4-4dff-86ef-896382d40678",
+    id: firstRecipe.id,
   });
 
   it("should get a recipe when the id exists", () => {
