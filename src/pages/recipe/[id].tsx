@@ -21,6 +21,7 @@ import { appRouter } from "../../server/router";
 import { createContextInner } from "../../server/router/context";
 import { useSession } from "next-auth/react";
 import { RecipeLoadingSkeleton } from "../../components/layout/RecipeLoadingSkeleton";
+import { RecipeWithUserAndLikes } from "../../server/common/schemas";
 
 const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   id,
@@ -118,7 +119,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               </button>
             )}
 
-            <p>{recipe.likeCount}</p>
+            <p>{recipe._count.likes}</p>
           </div>
           <p>{dayjs(recipe.createdAt.toString()).format("DD/MM/YYYY HH:mm")}</p>
         </div>
@@ -142,6 +143,7 @@ const RecipePage: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
               src={recipeCreator.image}
               layout="fill"
               className="rounded-full"
+              alt={recipeCreator.firstName}
             />
           </div>
           <h3 className="text-lg hover:cursor-pointer hover:text-purple-300 ease-in-out duration-300">
@@ -216,7 +218,7 @@ export async function getStaticProps(
     props: {
       trpcState: ssg.dehydrate(),
       id,
-      recipe: JSON.parse(JSON.stringify(recipe)),
+      recipe: JSON.parse(JSON.stringify(recipe)) as RecipeWithUserAndLikes,
     },
     revalidate: 1,
   };

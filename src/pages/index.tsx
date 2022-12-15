@@ -1,14 +1,15 @@
 import type { GetStaticProps, NextPage } from "next/types";
+import { useSession } from "next-auth/react";
 
 import { prisma } from "../server/db/client";
-import { ILike, IRecipe } from "../server/common/schemas";
-
-import { RecipeCard } from "../components/RecipeCard";
-import { useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
 
+import type { RecipeWithLikes } from "../server/common/schemas";
+
+import { RecipeCard } from "../components/RecipeCard";
+
 interface PageProps {
-  recipes: IRecipe[] | null;
+  recipes: RecipeWithLikes[] | null;
 }
 
 const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
@@ -33,17 +34,17 @@ const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
   ) {
     return (
       <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
-        {recipes.map((recipe: IRecipe) => {
-          return <RecipeCard key={recipe.id} recipe={recipe} />;
-        })}
+        {recipes.map((recipe: RecipeWithLikes) => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
+        ))}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
-      {recipes.map((recipe: IRecipe) => {
-        return likedRecipes.map((likedRecipe: ILike) => {
+      {recipes.map((recipe: RecipeWithLikes) => {
+        return likedRecipes.map((likedRecipe) => {
           return (
             <RecipeCard
               key={recipe.id}
@@ -63,7 +64,11 @@ const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
 };
 
 export const getStaticProps: GetStaticProps<PageProps> = async () => {
-  let recipes = await prisma.recipe.findMany();
+  let recipes = await prisma.recipe.findMany({
+    include: {
+      _count: { select: { likes: true } },
+    },
+  });
 
   recipes = JSON.parse(JSON.stringify(recipes));
 

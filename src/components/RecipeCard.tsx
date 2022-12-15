@@ -1,18 +1,17 @@
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import NextLink from "next/link";
-import { IRecipe } from "../server/common/schemas";
+import { IRecipe, RecipeWithLikes } from "../server/common/schemas";
 import { trpc } from "../utils/trpc";
 import { RecipeTags } from "./RecipeTags";
 
 interface RecipeCardProps {
-  recipe: IRecipe;
+  recipe: RecipeWithLikes;
   hasUserLiked?: boolean;
 }
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({
-  recipe: { id, name, tags, likeCount, createdAt, displayImage },
+  recipe: { id, name, tags, createdAt, displayImage, _count },
   hasUserLiked,
 }: RecipeCardProps) => {
   const utils = trpc.useContext();
@@ -88,7 +87,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
               </button>
             )}
 
-            <p>{likeCount}</p>
+            <p>{_count.likes}</p>
           </div>
           <p>{dayjs(createdAt.toString()).format("DD/MM/YYYY HH:mm")}</p>
         </div>
