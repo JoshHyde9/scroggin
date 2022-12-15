@@ -43,21 +43,16 @@ const Home: NextPage<PageProps> = ({ recipes }: PageProps) => {
 
   return (
     <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
-      {recipes.map((recipe: RecipeWithLikes) => {
-        return likedRecipes.map((likedRecipe) => {
-          return (
-            <RecipeCard
-              key={recipe.id}
-              recipe={recipe}
-              hasUserLiked={
-                userSession.user?.id === likedRecipe.userId &&
-                likedRecipe.recipeId === recipe.id
-                  ? true
-                  : false
-              }
-            />
-          );
-        });
+      {likedRecipes.map((recipe) => {
+        return (
+          <RecipeCard
+            key={recipe.id}
+            recipe={recipe}
+            hasUserLiked={recipe.likes.some(
+              (like) => like.userId === userSession.user.id
+            )}
+          />
+        );
       })}
     </div>
   );
