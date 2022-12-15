@@ -5,7 +5,7 @@ import { loggedOutCaller, loggedOutCtx } from "../data";
 describe("recipe@delete", async () => {
   const recipe = await loggedOutCtx.prisma.recipe.findFirstOrThrow();
 
-  it("should return 401 UNAUTHORIZED if a user tries to create a new recipe and is not logged in", async () => {
+  it("should return 401 UNAUTHORIZED if a user tries to delete an existing recipe and is not logged in", async () => {
     await expect(async () => {
       await loggedOutCaller.mutation("recipe.delete", { id: recipe.id });
     }).rejects.toThrow(
