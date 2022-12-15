@@ -2,27 +2,18 @@ import { describe, expect, it } from "vitest";
 import { TRPCError } from "@trpc/server";
 import { Recipe } from "@prisma/client";
 
-import { appRouter } from "../../src/server/router";
 import { createContextInner } from "../../src/server/router/context";
-
-import { ICreateBackendRecipe } from "../../src/server/common/schemas";
+import {
+  loggedInCaller,
+  loggedOutCaller,
+  loggedOutCtx,
+  newRecipe,
+} from "../data";
 
 describe("recipe@create", async () => {
-  const loggedOutCtx = await createContextInner({ session: null });
-  const caller = appRouter.createCaller(loggedOutCtx);
-
-  const newRecipe: ICreateBackendRecipe = {
-    name: "Croissant",
-    ingredients: "Do something",
-    method: "Do something",
-    displayImage:
-      "https://static01.nyt.com/images/2021/04/07/dining/06croissantsrex1/merlin_184841898_ccc8fb62-ee41-44e8-9ddf-b95b198b88db-master768.jpg",
-    tags: "Baking,Dessert",
-  };
-
   it("should return 401 UNAUTHORIZED if a user tries to create a new recipe and is not logged in", async () => {
     await expect(async () => {
-      await caller.mutation("recipe.create", newRecipe);
+      await loggedOutCaller.mutation("recipe.create", newRecipe);
     }).rejects.toThrow(
       new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorised." })
     );
@@ -36,8 +27,6 @@ describe("recipe@create", async () => {
       expires: new Date(Date.now() + 2 * 86400).toISOString(),
     },
   });
-
-  const loggedInCaller = appRouter.createCaller(loggedInCtx);
 
   const recipe = await loggedInCaller.mutation("recipe.create", newRecipe);
 

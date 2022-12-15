@@ -1,13 +1,10 @@
 import { Recipe } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import { appRouter } from "../../src/server/router";
-import { createContextInner } from "../../src/server/router/context";
+
+import { loggedOutCaller } from "../data";
 
 describe("recipe@getAll", async () => {
-  const ctx = await createContextInner({ session: null });
-  const caller = appRouter.createCaller(ctx);
-
-  const recipes = await caller.query("recipe.getAll");
+  const recipes = await loggedOutCaller.query("recipe.getAll");
 
   it("should get an array of recipes with valid keys", () => {
     expect(recipes).toEqual(
