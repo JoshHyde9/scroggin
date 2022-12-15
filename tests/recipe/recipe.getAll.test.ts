@@ -19,7 +19,6 @@ describe("recipe@getAll", async () => {
           ingredients: expect.any(String),
           method: expect.any(String),
           tags: expect.any(Array<string>),
-          likeCount: expect.any(Number),
           userId: expect.any(String),
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),

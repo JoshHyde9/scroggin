@@ -49,7 +49,6 @@ describe("recipe@create", async () => {
       userId: loggedInCtx.session!.user.id,
       displayImage: newRecipe.displayImage,
       ingredients: newRecipe.ingredients,
-      likeCount: expect.any(Number),
       method: newRecipe.method,
       tags: recipe.tags,
       createdAt: expect.any(Date),
