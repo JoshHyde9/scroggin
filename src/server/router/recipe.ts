@@ -54,7 +54,12 @@ export const recipeRouter = createRouter()
 
       const recipeAndCreator = await ctx.prisma.recipe.findUnique({
         where: { id: recipeId },
-        include: { user: true },
+        include: {
+          _count: { select: { likes: true } },
+          user: {
+            select: { firstName: true, lastName: true, id: true, image: true },
+          },
+        },
       });
 
       return recipeAndCreator;
@@ -235,22 +240,14 @@ export const recipeRouter = createRouter()
       });
 
       if (!isPostLiked) {
-        const [like, likedRecipe] = await ctx.prisma.$transaction([
+        const [like] = await ctx.prisma.$transaction([
           ctx.prisma.like.create({
-            data: { userId: loggedInUser.id, recipeId: recipe.id, value: 1 },
-          }),
-          ctx.prisma.recipe.update({
-            where: { id: recipe.id },
-            data: { likeCount: recipe.likeCount + 1 },
+            data: { userId: loggedInUser.id, recipeId: recipe.id },
           }),
         ]);
-        return [like, likedRecipe];
+        return [like];
       } else {
         const [updatedRecipe] = await ctx.prisma.$transaction([
-          ctx.prisma.recipe.update({
-            where: { id: recipe.id },
-            data: { likeCount: recipe.likeCount - 1 },
-          }),
           ctx.prisma.like.delete({ where: { recipeId: recipe.id } }),
         ]);
 
