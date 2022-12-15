@@ -1,10 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "argon2";
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.user.deleteMany({});
   await prisma.like.deleteMany({});
   await prisma.recipe.deleteMany({});
+  await prisma.user.deleteMany({});
 
   await prisma.user.createMany({
     data: [
@@ -13,240 +14,210 @@ async function main() {
         firstName: "Brooks",
         lastName: "Kalvin",
         email: "bkalvin0@nasa.gov",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "0803ecbf-d3e0-4c7f-8e24-cbc784772320",
         firstName: "Kristal",
         lastName: "Guilayn",
         email: "kguilayn1@g.co",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "f5884097-7299-4050-b331-1d8b766a65d8",
         firstName: "Godart",
         lastName: "Carlone",
         email: "gcarlone2@sbwire.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "f2ed20bf-b1f3-4395-8cf6-26ddfada1c3e",
         firstName: "Adriano",
         lastName: "Gergolet",
         email: "agergolet3@elpais.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "418fd7f3-444e-4c3f-97e4-ad40eb1262bd",
         firstName: "Curcio",
         lastName: "Salt",
         email: "csalt4@ucoz.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "b556ec30-c22b-40ed-aac5-9a350d88312e",
         firstName: "Clarie",
         lastName: "Dearle-Palser",
         email: "cdearlepalser5@nhs.uk",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "8a14b091-3422-4944-bac8-5e7def785c95",
         firstName: "Hillier",
         lastName: "Mottley",
         email: "hmottley6@sun.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "583b20be-f78a-4bb5-9432-928b2996f41d",
         firstName: "Koressa",
         lastName: "Archell",
         email: "karchell7@businessweek.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "0732fbfe-c740-4621-8814-0876fca369ee",
         firstName: "Sharona",
         lastName: "Sharple",
         email: "ssharple8@wikia.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "1169a41f-3eb2-42d4-9f9b-d7cd7a37fc77",
         firstName: "Bernie",
         lastName: "Lupson",
         email: "blupson9@nhs.uk",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "e2402551-1647-4848-99db-50d16004a208",
         firstName: "Nerta",
         lastName: "Ashmole",
         email: "nashmolea@google.de",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "a91ac4bf-1106-45fb-bb88-173e01571fdb",
         firstName: "Sebastien",
         lastName: "Leivers",
         email: "sleiversb@unblog.fr",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "f0c33eaa-478f-4201-84be-4ff5b1e60505",
         firstName: "Eldredge",
         lastName: "Skone",
         email: "eskonec@icio.us",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "3d5f939f-870e-424c-b6b7-7e60e7a3d34a",
         firstName: "Winna",
         lastName: "Meegin",
         email: "wmeegind@google.fr",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "c78e5320-2f95-4994-ae7e-8560ff3a3c32",
         firstName: "Marcie",
         lastName: "Musslewhite",
         email: "mmusslewhitee@php.net",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "633a21eb-30f7-4b7e-9cd3-135d69545e20",
         firstName: "D'arcy",
         lastName: "Habershon",
         email: "dhabershonf@icio.us",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "213b31b8-749c-4f2b-ad43-e737555eb83c",
         firstName: "Joby",
         lastName: "Pendrick",
         email: "jpendrickg@google.fr",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "f5af37a1-8d4f-4aae-8869-6055fd35cc15",
         firstName: "Adora",
         lastName: "Buckland",
         email: "abucklandh@xing.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "5cbb74b4-f0cf-4aea-b160-a1abe125f338",
         firstName: "Huntington",
         lastName: "D'Emanuele",
         email: "hdemanuelei@jiathis.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "2a52ac24-07d9-4c70-8d17-5c3d89bff992",
         firstName: "Gearalt",
         lastName: "Measor",
         email: "gmeasorj@foxnews.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "469ef2e1-4710-442d-867e-4168c306e186",
         firstName: "Graig",
         lastName: "Seamer",
         email: "gseamerk@wsj.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "9489616f-715d-4af3-bf9b-7f7bde52b3e7",
         firstName: "Lazar",
         lastName: "Carrol",
         email: "lcarroll@shareasale.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "e7e8db88-f13d-439f-bb8c-595011e54a77",
         firstName: "Selena",
         lastName: "Allenby",
         email: "sallenbym@de.vu",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "b01d65e5-bcd2-48aa-a53e-3937afe6f5ea",
         firstName: "Ginger",
         lastName: "Baise",
         email: "gbaisen@quantcast.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "9b027577-929b-486a-b334-279ac75176a9",
         firstName: "Dannie",
         lastName: "Brenton",
         email: "dbrentono@amazon.de",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "343fa9bd-e0e8-47a1-88e4-aa397ebb164b",
         firstName: "Penn",
         lastName: "Stallebrass",
         email: "pstallebrassp@mysql.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "78c1ead7-72d5-4742-9b6e-9a081cbe2e65",
         firstName: "Price",
         lastName: "Stuehmeier",
         email: "pstuehmeierq@constantcontact.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "c8bc3670-202b-4b50-bdb7-da37bc68f74d",
         firstName: "Brnaba",
         lastName: "Peek",
         email: "bpeekr@cpanel.net",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "f6e84609-32a5-4e64-842b-7bbd96f7dd43",
         firstName: "Mahalia",
         lastName: "Wincer",
         email: "mwincers@google.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
       {
         id: "c38124a2-ccef-4e6b-a6dd-8d5df97a58cb",
         firstName: "Zebedee",
         lastName: "Maitland",
         email: "zmaitlandt@flickr.com",
-        password:
-          "$argon2id$v=19$m=663641,t=41456,p=45,keyid=c$njagjTvAEffVUqSDXG7VmXw0Z8BRjMob98CrBqbbUQ3VG9Gookczx$Xnw4dPrbGO2/SHvcqr9sNakiiQev6Eh0sntnLzRYl7lirbTiH6Z+e",
+        password: await hash("123456"),
       },
     ],
   });
