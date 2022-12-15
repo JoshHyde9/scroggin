@@ -4,12 +4,12 @@ import type { GetServerSideProps, NextPage } from "next";
 
 import { prisma } from "../../server/db/client";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
-import { IRecipe } from "../../server/common/schemas";
+import { RecipeWithLikes } from "../../server/common/schemas";
 import { RecipeCard } from "../../components/RecipeCard";
 
 interface PageProps {
   userSession: Session | null;
-  userRecipes: IRecipe[] | null;
+  userRecipes: RecipeWithLikes[] | null;
 }
 
 const UserAccount: NextPage<PageProps> = ({ userSession, userRecipes }) => {
@@ -42,7 +42,7 @@ const UserAccount: NextPage<PageProps> = ({ userSession, userRecipes }) => {
       </div>
       {showUserRecipes && (
         <div className="flex flex-col items-center gap-10 px-10 mt-10 lg:items-stretch lg:flex-row">
-          {userRecipes?.map((recipe: IRecipe) => {
+          {userRecipes?.map((recipe) => {
             return <RecipeCard recipe={recipe} key={recipe.id} />;
           })}
         </div>
