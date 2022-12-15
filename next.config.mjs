@@ -27,6 +27,7 @@ export default defineNextConfig({
       "cdn.pixabay.com",
       "www.sbs.com.au",
       "joshhyde9.github.io",
+      "dummyimage.com",
     ],
   },
 });
