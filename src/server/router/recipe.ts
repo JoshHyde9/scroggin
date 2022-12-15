@@ -93,8 +93,11 @@ export const recipeRouter = createRouter()
         return null;
       }
 
-      const userLikedRecipes = await ctx.prisma.like.findMany({
-        where: { userId },
+      const userLikedRecipes = await ctx.prisma.recipe.findMany({
+        include: {
+          likes: { where: { userId } },
+          _count: { select: { likes: true } },
+        },
       });
 
       if (!userLikedRecipes) {
@@ -226,7 +229,12 @@ export const recipeRouter = createRouter()
 
       const loggedInUser = ctx.session.user;
 
-      const recipe = await ctx.prisma.recipe.findUnique({ where: { id } });
+      const recipe = await ctx.prisma.recipe.findUnique({
+        where: { id },
+        include: {
+          likes: { where: { userId: loggedInUser.id, recipeId: id } },
+        },
+      });
 
       if (!recipe) {
         throw new TRPCError({
@@ -235,23 +243,14 @@ export const recipeRouter = createRouter()
         });
       }
 
-      const isPostLiked = await ctx.prisma.like.findFirst({
-        where: { userId: loggedInUser.id, recipeId: id },
-      });
-
-      if (!isPostLiked) {
-        const [like] = await ctx.prisma.$transaction([
-          ctx.prisma.like.create({
-            data: { userId: loggedInUser.id, recipeId: recipe.id },
-          }),
-        ]);
-        return [like];
+      if (!recipe.likes[0]) {
+        return ctx.prisma.like.create({
+          data: { userId: loggedInUser.id, recipeId: recipe.id },
+        });
       } else {
-        const [updatedRecipe] = await ctx.prisma.$transaction([
-          ctx.prisma.like.delete({ where: { recipeId: recipe.id } }),
-        ]);
-
-        return updatedRecipe;
+        return ctx.prisma.like.deleteMany({
+          where: { id: recipe.likes[0].id },
+        });
       }
     },
   });
