@@ -89,6 +89,8 @@ tRPC will be updated to v10 and most likely Next 13 for the major changes, rest 
 
 ### To do
 
+I setup a Kanban board on Notion that you can view [here](https://magic-thief-675.notion.site/f463e4c4012c4b75b90eecf27e61d17c?v=114ebf4c4bc34da8ba54915a8d9552a1) to more easily view the development process.
+
 - Create categories
   - Create a category table instead of relying on an array of strings (who thought this was a good idea).
   - Create a category page.
