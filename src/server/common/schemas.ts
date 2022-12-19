@@ -46,6 +46,12 @@ export const likeSchema = z.object({
 });
 export type ILike = z.infer<typeof likeSchema>;
 
+const editRecipeSchema = backendCreateRecipeSchema.extend({
+  id: z.string(),
+});
+
+export type EditRecipeSchema = z.infer<typeof editRecipeSchema>;
+
 export const updateUserSchema = registerSchema.extend({
   image: z.string().url(),
 });
