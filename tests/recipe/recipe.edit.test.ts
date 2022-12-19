@@ -9,7 +9,7 @@ import {
   loggedOutCtx,
 } from "../data";
 
-describe("recipe@delete", async () => {
+describe("recipe@edit", async () => {
   const recipe = await loggedOutCtx.prisma.recipe.findFirstOrThrow();
 
   it("should return 401 UNAUTHORIZED if a user tries to delete an existing recipe and is not logged in", async () => {
