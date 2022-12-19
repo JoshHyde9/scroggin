@@ -4,7 +4,13 @@ import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/react";
 import { Session } from "next-auth";
 
-const NavLink = ({ to, children }: { to: string; children: any }) => {
+const NavLink = ({
+  to,
+  children,
+}: {
+  to: string;
+  children: React.ReactNode;
+}) => {
   const router = useRouter();
 
   return (
@@ -75,6 +81,16 @@ const MobileNav = ({
         )}
         {session && (
           <>
+            <NextLink href="/recipe/create">
+              <a
+                className={`text-xl font-normal my-4 ${
+                  router.asPath === "/recipe/create" ? "text-purple-500" : ""
+                }`}
+                onClick={() => setOpen(!open)}
+              >
+                Create
+              </a>
+            </NextLink>
             <button
               className="text-xl font-normal my-4 text-left"
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -136,6 +152,7 @@ const NavBar: React.FC = () => {
           )}
           {session && (
             <>
+              <NavLink to="/recipe/create">Create</NavLink>
               <button
                 onClick={() => signOut()}
                 className="transition ease-in-out duration-300 relative hover:text-purple-300"
