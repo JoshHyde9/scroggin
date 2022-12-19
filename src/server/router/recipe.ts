@@ -239,18 +239,20 @@ export const recipeRouter = createRouter()
       if (!recipe) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "Recipe does not exist. ",
+          message: "Recipe does not exist.",
         });
       }
 
-      if (!recipe.likes[0]) {
-        return ctx.prisma.like.create({
-          data: { userId: loggedInUser.id, recipeId: recipe.id },
+      if (recipe.likes.length >= 1) {
+        await ctx.prisma.like.delete({
+          where: { id: recipe.likes[0]?.id },
         });
-      } else {
-        return ctx.prisma.like.deleteMany({
-          where: { id: recipe.likes[0].id },
-        });
+
+        return true;
       }
+
+      return ctx.prisma.like.create({
+        data: { recipeId: recipe.id, userId: loggedInUser.id },
+      });
     },
   });
